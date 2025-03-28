@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Dashboard | Digital Classroom</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Teacher Dashboard Specific Styles */
+    .teacher-dashboard {
+      max-width: 800px;
+      margin: 2rem auto;
+      text-align: center;
+    }
+    
+    .teacher-header {
+      margin-bottom: 3rem;
+    }
+    
+    .teacher-welcome {
+      font-size: 1.2rem;
+      color: #7f8c8d;
+    }
+    
+    .teacher-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    
+    .teacher-card {
+      background: white;
+      border-radius: 10px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .teacher-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .teacher-card.classroom {
+      border-top: 4px solid #3498db;
+    }
+    
+    .teacher-card.grading {
+      border-top: 4px solid #2ecc71;
+    }
+    
+    .teacher-icon {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .teacher-card h2 {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+    }
+    
+    .teacher-card p {
+      color: #7f8c8d;
+      line-height: 1.6;
+    }
+    
+    @media (max-width: 600px) {
+      .teacher-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="teacher-dashboard">
+    <header class="teacher-header">
+      <h1>Teacher Dashboard</h1>
+      <p class="teacher-welcome" id="welcomeMessage">Welcome back!</p>
+    </header>
+    
+    <div class="teacher-actions">
+      <a href="manage-classroom.html" class="teacher-card classroom">
+        <div class="teacher-icon">🏫</div>
+        <h2>Classroom</h2>
+        <p>Create and manage your virtual classrooms, set assignments, and track attendance</p>
+      </a>
+      
+      <a href="grading-portal.html" class="teacher-card grading">
+        <div class="teacher-icon">📝</div>
+        <h2>Grading</h2>
+        <p>Evaluate student submissions, provide grades, and give personalized feedback</p>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Get teacher name from URL or localStorage (simulated)
+    const urlParams = new URLSearchParams(window.location.search);
+    const teacherName = urlParams.get('name') || 'Teacher';
+    
+    // Update welcome message
+    document.getElementById('welcomeMessage').textContent = `Welcome back, ${teacherName}!`;
+    
+    // In a real app, you would fetch teacher data here
+    // Example: fetchTeacherData();
+  </script>
+</body>
+</html>

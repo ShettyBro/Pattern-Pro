@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Classroom | Digital Classroom</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Classroom Management Specific Styles */
+    .classroom-form-container {
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+    }
+    
+    .form-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    
+    .url-group {
+      display: flex;
+      align-items: center;
+    }
+    
+    .url-prefix {
+      padding: 0.8rem;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-right: none;
+      border-radius: 6px 0 0 6px;
+      font-size: 0.9rem;
+    }
+    
+    #classUrl {
+      border-radius: 0 6px 6px 0;
+      flex: 1;
+    }
+    
+    .submit-btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 1rem;
+      font-size: 1.1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+    
+    .submit-btn:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-group.full-width {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="classroom-form-container">
+    <div class="form-header">
+      <h1>Create New Classroom</h1>
+      <p>Set up your virtual classroom for students to join</p>
+    </div>
+    
+    <form id="classroomForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="teacherName">Teacher Name</label>
+          <input type="text" id="teacherName" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="class">Class</label>
+          <select id="class" required>
+            <option value="">Select Class</option>
+            <option value="1">Class 1</option>
+            <option value="2">Class 2</option>
+            <!-- Add more classes as needed -->
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="division">Division</label>
+          <select id="division" required>
+            <option value="">Select Division</option>
+            <option value="A">Division A</option>
+            <option value="B">Division B</option>
+            <option value="C">Division C</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <select id="subject" required>
+            <option value="">Select Subject</option>
+            <option value="kannada">Kannada</option>
+            <option value="english">English</option>
+            <option value="hindi">Hindi</option>
+            <option value="maths">Mathematics</option>
+            <option value="science">Science</option>
+            <option value="social">Social Science</option>
+          </select>
+        </div>
+        
+        <div class="form-group full-width">
+          <label for="classUrl">Classroom URL</label>
+          <div class="url-group">
+            <span class="url-prefix">classroom.example.com/</span>
+            <input type="text" id="classUrl" placeholder="your-class-id" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="classDate">Date</label>
+          <input type="date" id="classDate" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="classTime">Time</label>
+          <input type="time" id="classTime" required>
+        </div>
+      </div>
+      
+      <button type="submit" class="submit-btn">Create Classroom</button>
+    </form>
+  </div>
+
+  <script>
+    // Set teacher name if available
+    const urlParams = new URLSearchParams(window.location.search);
+    const teacherName = urlParams.get('name') || '';
+    if (teacherName) {
+      document.getElementById('teacherName').value = teacherName;
+    }
+    
+    // Generate default class URL based on selections
+    function generateClassUrl() {
+      const subject = document.getElementById('subject').value;
+      const classVal = document.getElementById('class').value;
+      const division = document.getElementById('division').value;
+      
+      if (subject && classVal && division) {
+        return `${subject}-${classVal}${division.toLowerCase()}`;
+      }
+      return '';
+    }
+    
+    // Update URL when selections change
+    document.getElementById('subject').addEventListener('change', function() {
+      document.getElementById('classUrl').value = generateClassUrl();
+    });
+    
+    document.getElementById('class').addEventListener('change', function() {
+      document.getElementById('classUrl').value = generateClassUrl();
+    });
+    
+    document.getElementById('division').addEventListener('change', function() {
+      document.getElementById('classUrl').value = generateClassUrl();
+    });
+    
+    // Form submission
+    document.getElementById('classroomForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form values
+      const formData = {
+        teacherName: document.getElementById('teacherName').value,
+        class: document.getElementById('class').value,
+        division: document.getElementById('division').value,
+        subject: document.getElementById('subject').value,
+        classUrl: document.getElementById('classUrl').value,
+        date: document.getElementById('classDate').value,
+        time: document.getElementById('classTime').value
+      };
+      
+      console.log('Classroom created:', formData);
+      alert('Classroom created successfully!');
+      // In real app: send data to backend
+    });
+    
+    // Set default date to today
+    document.getElementById('classDate').valueAsDate = new Date();
+  </script>
+</body>
+</html>

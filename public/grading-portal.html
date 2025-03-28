@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grading System | Digital Classroom</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Grading System Specific Styles */
+    .grading-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+    }
+    
+    .grading-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .grading-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    
+    .marks-container {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .marks-input {
+      flex: 1;
+    }
+    
+    .grade-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    
+    .grade-option {
+      padding: 0.5rem;
+      text-align: center;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .grade-option:hover {
+      background: #f5f5f5;
+    }
+    
+    .grade-option.selected {
+      background: #3498db;
+      color: white;
+      border-color: #3498db;
+    }
+    
+    .submit-btn {
+      background: #2ecc71;
+      color: white;
+      border: none;
+      padding: 1rem;
+      font-size: 1.1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+    
+    .submit-btn:hover {
+      background: #27ae60;
+      transform: translateY(-2px);
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .grading-form {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-group.full-width {
+        grid-column: span 1;
+      }
+      
+      .grade-options {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grading-container">
+    <div class="grading-header">
+      <h1>Assignment Grading</h1>
+      <p>Evaluate student submissions and provide grades</p>
+    </div>
+    
+    <form id="gradingForm">
+      <div class="grading-form">
+        <div class="form-group">
+          <label for="studentName">Student Name</label>
+          <input type="text" id="studentName" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="rollNumber">Roll Number</label>
+          <input type="text" id="rollNumber" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <select id="subject" required>
+            <option value="">Select Subject</option>
+            <option value="kannada">Kannada</option>
+            <option value="english">English</option>
+            <option value="hindi">Hindi</option>
+            <option value="maths">Mathematics</option>
+            <option value="science">Science</option>
+            <option value="social">Social Science</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="assignmentTopic">Assignment Topic</label>
+          <input type="text" id="assignmentTopic" required>
+        </div>
+        
+        <div class="form-group full-width">
+          <label>Marks</label>
+          <div class="marks-container">
+            <div class="marks-input">
+              <label for="obtainedMarks">Obtained Marks</label>
+              <input type="number" id="obtainedMarks" min="0" step="0.5" required>
+            </div>
+            <div class="marks-input">
+              <label for="totalMarks">Total Marks</label>
+              <input type="number" id="totalMarks" min="1" value="100" required>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group full-width">
+          <label for="grade">Grade</label>
+          <input type="text" id="grade" readonly required>
+          <div class="grade-options" id="gradeOptions">
+            <div class="grade-option" data-grade="A+">A+</div>
+            <div class="grade-option" data-grade="A">A</div>
+            <div class="grade-option" data-grade="B+">B+</div>
+            <div class="grade-option" data-grade="B">B</div>
+            <div class="grade-option" data-grade="C+">C+</div>
+            <div class="grade-option" data-grade="C">C</div>
+          </div>
+        </div>
+        
+        <div class="form-group full-width">
+          <label for="feedback">Feedback (Optional)</label>
+          <textarea id="feedback" rows="4"></textarea>
+        </div>
+      </div>
+      
+      <button type="submit" class="submit-btn">Submit Grade</button>
+    </form>
+  </div>
+
+  <script>
+    // Grade selection functionality
+    const gradeOptions = document.querySelectorAll('.grade-option');
+    const gradeInput = document.getElementById('grade');
+    
+    gradeOptions.forEach(option => {
+      option.addEventListener('click', function() {
+        // Remove previous selection
+        gradeOptions.forEach(opt => opt.classList.remove('selected'));
+        
+        // Select current option
+        this.classList.add('selected');
+        gradeInput.value = this.dataset.grade;
+      });
+    });
+    
+    // Auto-calculate grade based on marks (simplified)
+    document.getElementById('obtainedMarks').addEventListener('input', function() {
+      const obtained = parseFloat(this.value);
+      const total = parseFloat(document.getElementById('totalMarks').value);
+      
+      if (obtained && total) {
+        const percentage = (obtained / total) * 100;
+        let grade = '';
+        
+        if (percentage >= 90) grade = 'A+';
+        else if (percentage >= 80) grade = 'A';
+        else if (percentage >= 70) grade = 'B+';
+        else if (percentage >= 60) grade = 'B';
+        else if (percentage >= 50) grade = 'C+';
+        else grade = 'C';
+        
+        gradeInput.value = grade;
+        
+        // Highlight the corresponding grade option
+        gradeOptions.forEach(opt => {
+          opt.classList.toggle('selected', opt.dataset.grade === grade);
+        });
+      }
+    });
+    
+    // Form submission
+    document.getElementById('gradingForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form values
+      const formData = {
+        studentName: document.getElementById('studentName').value,
+        rollNumber: document.getElementById('rollNumber').value,
+        subject: document.getElementById('subject').value,
+        assignmentTopic: document.getElementById('assignmentTopic').value,
+        obtainedMarks: document.getElementById('obtainedMarks').value,
+        totalMarks: document.getElementById('totalMarks').value,
+        grade: document.getElementById('grade').value,
+        feedback: document.getElementById('feedback').value
+      };
+      
+      console.log('Grade submitted:', formData);
+      alert('Grade submitted successfully!');
+      // In real app: send data to backend
+    });
+  </script>
+</body>
+</html>
