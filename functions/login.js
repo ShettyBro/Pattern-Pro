@@ -13,7 +13,7 @@ exports.handler = async (event) => {
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
-  // Handle preflight OPTIONS request
+ 
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -49,7 +49,7 @@ exports.handler = async (event) => {
 
     const user = result.recordset[0];
 
-    // Debugging: Check if PasswordHash exists
+    
     console.log("Fetched user:", user);
 
     if (!user.PasswordHash) {
@@ -60,7 +60,7 @@ exports.handler = async (event) => {
       };
     }
 
-    const isMatch = await bcrypt.compare(password, user.PasswordHash); // Fixed field name
+    const isMatch = await bcrypt.compare(password, user.PasswordHash); 
 
     if (isMatch) {
       const token = jwt.sign(
@@ -78,7 +78,7 @@ exports.handler = async (event) => {
       return {
         statusCode: 401,
         headers,
-        body: JSON.stringify({ message: 'Invalid username or password' })
+        body: JSON.stringify({ message: 'Invalid Roll No. or password' })
       };
     }
   } catch (err) {

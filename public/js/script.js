@@ -101,3 +101,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Login function
+document.addEventListener("DOMContentLoaded", function () {
+    const loginForm = document.querySelector("form");
+    
+    loginForm.addEventListener("submit", async function (event) {
+      event.preventDefault(); // Prevent page reload
+  
+      const rollno = document.getElementById("s-login-id").value.trim();
+      const password = document.getElementById("s-password").value.trim();
+  
+      if (!rollno || !password) {
+        alert("Please enter both Roll Number and Password.");
+        return;
+      }
+  
+      try {
+        const response = await fetch("https://classflow.sudeepbro.me/.netlify/functions/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ rollno, password }),
+        });
+  
+        const data = await response.json();
+  
+        if (response.ok) {
+          alert("Login successful!");
+          localStorage.setItem("token", data.token); // Store token in localStorage
+          window.location.href = "dashboard.html"; // Redirect to dashboard
+        } else {
+          alert(data.message || "Invalid credentials, please try again.");
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("Something went wrong. Please try again later.");
+      }
+    });
+  });
+  
