@@ -44,7 +44,7 @@ exports.handler = async (event) => {
     const pool = await sql.connect(dbConfig);
     const result = await pool.request()
       .input('RollNumber', sql.VarChar, rollno)
-      .query('SELECT * FROM Students WHERE RollNumber = @rollno');
+      .query('SELECT * FROM Students WHERE RollNumber = @RollNumber');
 
     if (result.recordset.length === 0) {
       return {
