@@ -49,16 +49,6 @@ exports.handler = async (event) => {
 
     const user = result.recordset[0];
 
-    
-    console.log("Fetched user:", user);
-
-    if (!user.PasswordHash) {
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({ message: 'Error: Password not found in database' })
-      };
-    }
 
     const isMatch = await bcrypt.compare(password, user.PasswordHash); 
 

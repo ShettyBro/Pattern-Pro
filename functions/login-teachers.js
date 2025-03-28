@@ -47,10 +47,23 @@ exports.handler = async (event) => {
 
         const teacher = teacherResult.recordset[0];
 
-        // Compare hashed password
+    
         const isPasswordValid = await bcrypt.compare(password, teacher.PasswordHash);
 
-        if (!isPasswordValid) {
+        if (isPasswordValid) {
+            const token = jwt.sign(
+                    { id: user.StudentID, rollno: user.RollNumber },
+                    JWT_SECRET,
+                    { expiresIn: '5h' }
+                  );
+        
+
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify({ message: 'Login successful', teacherId: teacher.TeacherID })
+            };
+        }else{
             return {
                 statusCode: 401,
                 headers,
@@ -58,17 +71,12 @@ exports.handler = async (event) => {
             };
         }
 
-        return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({ message: 'Login successful', teacherId: teacher.TeacherID })
-        };
     } catch (err) {
-        console.error("Database connection error:", err);
+        console.error("Login Error:", err);
         return {
-            statusCode: 500,
-            headers,
-            body: JSON.stringify({ message: 'Database error', error: err.message })
+          statusCode: 500,
+          headers,
+          body: JSON.stringify({ message: 'Error during login', error: err.message })
         };
-    }
+      }
 };
