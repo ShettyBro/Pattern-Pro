@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "node": "^18.20.8",
+    "node.js": "^0.0.1-security"
+  }
+}
