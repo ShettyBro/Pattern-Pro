@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 //student register
 
-const registerForm = document.getElementById('registerForm');
+const registerForm = document.getElementById('student-register-form');
 if (registerForm) {
     registerForm.addEventListener('submit', async (event) => {
         event.preventDefault(); // Prevent form from submitting the traditional way
@@ -151,8 +151,7 @@ if (registerForm) {
             showModal('Registration successful! Redirecting to login...', 'login.html');
         } else {
             const error = await response.text();
-            showModal(`Registration failed:
-                Username, fullname, or email already exists`);
+            showModal(`Registration failed: already exists`);
         }
     } catch (error) {
         console.error('Registration Error:', error);
