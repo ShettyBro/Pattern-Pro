@@ -1,0 +1,10 @@
+[build]
+  functions = "functions"
+  publish = "public"
+
+
+
+[[redirects]]
+  from = "/index.html"
+  to = "/index.html"
+  status = 200
