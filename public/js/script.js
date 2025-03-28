@@ -108,9 +108,10 @@ document.addEventListener('DOMContentLoaded', function() {
 //student register
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('student-register-form');
-    const successModal = document.getElementById('success-modal');
+    const successModal = document.getElementById('modal');
     const modalMessage = document.getElementById('modal-message');
-    const closeModal = document.getElementById('close-modal');
+    const closeModal = document.getElementById('close-modal'); // Ensure correct ID
+
     const registerButton = document.getElementById('registerButton');
 
     async function hashPassword(password) {

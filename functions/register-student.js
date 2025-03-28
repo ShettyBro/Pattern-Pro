@@ -21,13 +21,13 @@ exports.handler = async (event) => {
 
         console.log("Parsed Body:", body); // Debug log
 
-        // if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !password || !schoolName) {
-        //     return {
-        //         statusCode: 400,
-        //         headers,
-        //         body: JSON.stringify({ message: 'All fields are required' })
-        //     };
-        // }
+        if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !password || !schoolName) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ message: 'All fields are required' })
+            };
+        }
 
         const pool = await sql.connect(dbConfig);
 

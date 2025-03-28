@@ -41,7 +41,8 @@
         <label for="s-confirm-password">Confirm Password</label>
         <input type="password" id="s-confirm-password" required>
       </div>
-      <button type="submit" class="btn">Register</button>
+      <button type="submit" class="btn" id="registerButton">Register</button>
+
     </form>
     <p>Already have an account? <a href="./login-student.html">Login</a></p>
 
@@ -50,7 +51,8 @@
    <<!-- Modal for notifications -->
    <div id="modal" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+      <span id="close-modal" class="close">&times;</span>
+
         <p id="modal-message" class="modal-message"></p>
     </div>
 </div>
