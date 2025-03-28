@@ -1,5 +1,8 @@
 {
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.4.7",
+    "mssql": "^11.0.1",
     "node": "^18.20.8",
     "node.js": "^0.0.1-security"
   }
