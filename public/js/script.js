@@ -106,12 +106,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-// Register function
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('student-register-form');
     const successModal = document.getElementById('success-modal');
     const modalMessage = document.getElementById('modal-message');
     const closeModal = document.getElementById('close-modal');
+    const registerButton = document.getElementById('registerButton');
 
     async function hashPassword(password) {
         const encoder = new TextEncoder();
@@ -124,6 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
     registerForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
+        registerButton.disabled = true;
+        registerButton.textContent = 'Registering...';
+
         const fullName = document.getElementById('s-name').value.trim();
         const rollNumber = document.getElementById('s-rollno').value.trim();
         const studentClass = document.getElementById('s-class').value.trim();
@@ -135,11 +138,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !password || !schoolName) {
             alert("All fields are required!");
+            registerButton.disabled = false;
+            registerButton.textContent = 'Register';
             return;
         }
 
         if (password !== confirmPassword) {
             alert("Passwords do not match!");
+            registerButton.disabled = false;
+            registerButton.textContent = 'Register';
             return;
         }
 
@@ -154,10 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
-            const result = await response.json();
-
             if (response.ok) {
-                modalMessage.textContent = result.message;
+                modalMessage.textContent = 'Registration successful! Redirecting to login...';
                 successModal.style.display = 'block';
                 setTimeout(() => {
                     successModal.style.display = 'none';
@@ -165,11 +170,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 3000);
                 registerForm.reset();
             } else {
-                alert(`Error: ${result.message}`);
+                const result = await response.text();
+                modalMessage.textContent = `Registration failed: ${result}`;
+                successModal.style.display = 'block';
             }
         } catch (error) {
             console.error("Error submitting form:", error);
-            alert("Failed to register. Please try again.");
+            modalMessage.textContent = 'Server Down Contact Developer or Try Again Later';
+            successModal.style.display = 'block';
+        } finally {
+            registerButton.disabled = false;
+            registerButton.textContent = 'Register';
         }
     });
 
@@ -177,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         successModal.style.display = 'none';
     });
 });
+
 
 // student login
 document.addEventListener("DOMContentLoaded", function () {
