@@ -106,64 +106,98 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 //student register
+document.addEventListener("DOMContentLoaded", () => {
+    const registerForm = document.getElementById("student-register-form");
+    
+    if (!registerForm) return; // Ensure form exists before adding event listener
 
-const registerForm = document.getElementById('student-register-form');
-if (registerForm) {
-    registerForm.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Prevent form from submitting the traditional way
-       
-        // Get the button element and disable it
-        const registerButton = document.getElementById('registerButton');
-        registerButton.disabled = true; // Disable the button
-        registerButton.textContent = 'Registering...'; // Change button text for feedback
-       
-        const fullName = document.getElementById('s-name').value.trim();
-        const rollNumber = document.getElementById('s-rollno').value.trim();
-        const studentClass = document.getElementById('s-class').value.trim();
-        const division = document.getElementById('s-division').value.trim();
-        const phoneNumber = document.getElementById('s-phone').value.trim();
-        const password = document.getElementById('s-password').value;
-        const confirmPassword = document.getElementById('s-confirm-password').value;
-        const schoolName = document.getElementById('s-school').value.trim();
+    registerForm.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent default form submission
 
-          // Password validation rule: Minimum 8 characters and at least 1 special symbol
-          const passwordRegex = /^(?=.*[!@#$%^&*])(?=.{8,})/;
+        // Get button and disable it while submitting
+        const registerButton = document.getElementById("registerButton");
+        registerButton.disabled = true;
+        registerButton.textContent = "Registering...";
+
+        // Get form values
+        const fullName = document.getElementById("s-name").value.trim();
+        const rollNumber = document.getElementById("s-rollno").value.trim();
+        const studentClass = document.getElementById("s-class").value.trim();
+        const division = document.getElementById("s-division").value.trim();
+        const phoneNumber = document.getElementById("s-phone").value.trim();
+        const password = document.getElementById("s-password").value;
+        const confirmPassword = document.getElementById("s-confirm-password").value;
+        const schoolName = document.getElementById("s-school").value.trim();
+        const passwordError = document.getElementById("passwordError"); // Ensure password error field exists
+
+        // Password validation: Minimum 8 characters & at least 1 special character
+        const passwordRegex = /^(?=.*[!@#$%^&*])(?=.{8,})/;
 
         if (!passwordRegex.test(password)) {
-            passwordError.innerHTML = "<span style='color: red;'>Invalid Password <br>  * Mim 8 characters <br> * One special symbol (!@#$%^&*).</span>";
-            hasError = true;`1`
-            registerButton.disabled = false; // Re-enable the button if validation fails
-            registerButton.textContent = 'Register'; // Reset button text
+            if (passwordError) {
+                passwordError.innerHTML = "<span style='color: red;'>Invalid Password <br> * Minimum 8 characters <br> * At least one special symbol (!@#$%^&*).</span>";
+            }
+            registerButton.disabled = false;
+            registerButton.textContent = "Register";
             return;
-        }else {
-            passwordError.innerHTML = ""; // Clear password error if valid
-        }
-        
-
-    try {
-        const response = await fetch('https://classflow.sudeepbro.me/.netlify/functions/register-student', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fullName, rollNumber, studentClass, division,phoneNumber,schoolName,confirmPassword })
-        });
-
-        if (response.ok) {
-            showModal('Registration successful! Redirecting to login...', 'login.html');
         } else {
-            const error = await response.text();
-            showModal(`Registration failed: already exists`);
+            if (passwordError) passwordError.innerHTML = ""; // Clear error if valid
         }
-    } catch (error) {
-        console.error('Registration Error:', error);
-        showModal('Server Down Contact Develpoer or Try Again Later');
-    }finally {
-        // Re-enable the button after the request is complete
-        registerButton.disabled = false; // Re-enable the button
-        registerButton.textContent = 'Register'; // Reset button text
-    }
-});
-}
 
+        // Ensure passwords match
+        if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            registerButton.disabled = false;
+            registerButton.textContent = "Register";
+            return;
+        }
+
+        // Log request payload before sending
+        console.log("Sending Request:", { fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password });
+
+        try {
+            const response = await fetch("https://classflow.sudeepbro.me/.netlify/functions/register-student", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password })
+            });
+
+            const responseData = await response.text(); // Read response as text for debugging
+            console.log("Server Response:", responseData);
+
+            if (response.ok) {
+                showModal("Registration successful! Redirecting to login...", "login.html");
+            } else {
+                showModal(`Registration failed: ${responseData}`);
+            }
+        } catch (error) {
+            console.error("Registration Error:", error);
+            showModal("Server Down Contact Developer or Try Again Later");
+        } finally {
+            registerButton.disabled = false;
+            registerButton.textContent = "Register";
+        }
+    });
+});
+
+// Function to show a modal message
+function showModal(message, redirectUrl = null) {
+    const modal = document.getElementById("modal");
+    const modalMessage = document.getElementById("modal-message");
+
+    if (modal && modalMessage) {
+        modalMessage.textContent = message;
+        modal.style.display = "block";
+
+        if (redirectUrl) {
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 3000);
+        }
+    } else {
+        alert(message); // Fallback if modal doesn't exist
+    }
+}
   
 // teachers register
 document.addEventListener("DOMContentLoaded", function () {
