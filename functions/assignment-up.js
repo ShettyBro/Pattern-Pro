@@ -61,53 +61,5 @@ exports.handler = async (event) => {
     return { statusCode: 500, body: JSON.stringify({ error: "Internal Server Error" }) };
   }
 };
-const { BlobServiceClient } = require("@azure/storage-blob");
-const sql = require("mssql");
 
-exports.handler = async (event) => {
-  try {
-    const body = JSON.parse(event.body);
 
-    // Azure Blob Storage setup
-    const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
-    if (!AZURE_STORAGE_CONNECTION_STRING) throw new Error("Missing AZURE_STORAGE_CONNECTION_STRING");
-
-    const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
-    const containerClient = blobServiceClient.getContainerClient("assignments");
-
-    // Upload file (Simulating for now, since file isn't passed in event.body)
-    const blobName = `assignment_${Date.now()}.txt`; 
-    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    await blockBlobClient.upload("Sample file content", "Sample file content".length);
-
-    const downloadUrl = blockBlobClient.url; // This is the file link
-
-    // Azure SQL setup
-    const sqlConfig = {
-      user: process.env.AZURE_SQL_USER,
-      password: process.env.AZURE_SQL_PASSWORD,
-      server: process.env.AZURE_SQL_SERVER,
-      database: process.env.AZURE_SQL_DATABASE,
-      options: { encrypt: true, trustServerCertificate: false }
-    };
-
-    if (!sqlConfig.user || !sqlConfig.password || !sqlConfig.server || !sqlConfig.database) {
-      throw new Error("Missing Azure SQL Environment Variables");
-    }
-
-    await sql.connect(sqlConfig);
-    await sql.query`INSERT INTO Assignments (StudentID, FileURL) VALUES (${body.studentId}, ${downloadUrl})`;
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: "File uploaded successfully", fileUrl: downloadUrl }),
-    };
-
-  } catch (error) {
-    console.error("Error:", error.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-    };
-  }
-};
