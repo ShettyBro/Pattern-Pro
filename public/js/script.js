@@ -35,57 +35,50 @@ window.onclick = function (event) {
 }
 
 // Register function
-const registerForm = document.getElementById('registerForm');
-if (registerForm) {
+document.addEventListener('DOMContentLoaded', () => {
+    const registerForm = document.getElementById('student-register-form'); // Correct form ID
+
+    async function hashPassword(password) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
     registerForm.addEventListener('submit', async (event) => {
-        event.preventDefault(); // 
+        event.preventDefault();
 
-        
-        const registerButton = document.getElementById('registerButton');
-        registerButton.disabled = true; // Disable the button
-        registerButton.textContent = 'Registering...'; 
+        const fullName = document.getElementById('s-name').value.trim();
+        const rollNumber = document.getElementById('s-rollno').value.trim();
+        const studentClass = document.getElementById('s-class').value.trim();
+        const division = document.getElementById('s-division').value.trim();
+        const phoneNumber = document.getElementById('s-phone').value.trim();
+        const password = document.getElementById('s-password').value;
+        const confirmPassword = document.getElementById('s-confirm-password').value;
+        const schoolName = document.getElementById('s-school').value.trim();
 
-    
-        const fullName = document.getElementById('fullName');
-        const rollNumber = document.getElementById('rollNumber').value.trim();
-        const studentClass = document.getElementById('studentClass').value.trim();
-        const division = document.getElementById('division').value.trim();
-        const phoneNumber = document.getElementById('phoneNumber').value.trim();
-        const password = document.getElementById('password').value;
-        const SchoolName =document.getElementById('s-school').value.trim();
-
-    
-        const passwordRegex = /^(?=.*[!@#$%^&*])(?=.{8,})/;
-        const passwordError = document.getElementById('passwordError');
-
-        if (!passwordRegex.test(password)) {
-            passwordError.innerHTML = "<span style='color: red;'>Invalid Password <br> * Min 8 characters <br> * At least 1 special symbol (!@#$%^&*).</span>";
-            registerButton.disabled = false; 
-            registerButton.textContent = 'Register'; 
+        if (password !== confirmPassword) {
+            alert("Passwords do not match!");
             return;
-        } else {
-            passwordError.innerHTML = ""; 
         }
 
-        try {
-            const response = await fetch('https://classflow.sudeepbro.me/.netlify/functions/register-student', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullName, rollNumber, studentClass, division, phoneNumber, SchoolName, password })
-            });
+        const hashedPassword = await hashPassword(password);
 
-            if (response.ok) {
-                showModal('Registration successful! Redirecting to login...', 'login.html');
-            } else {
-                showModal('Registration failed: Roll number already exists or invalid details.');
-            }
-        } catch (error) {
-            console.error('Registration Error:', error);
-            showModal('Server Down. Contact Developer or Try Again Later');
-        } finally {
-            // Re-enable the button after the request is complete
-            registerButton.disabled = false; // Re-enable button
-            registerButton.textContent = 'Register'; // Reset button text
+        const response = await fetch('https://classflow.sudeepbro.me/.netlify/functions/register-student', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password: hashedPassword
+            })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert(result.message);
+            registerForm.reset();
+        } else {
+            alert(`Error: ${result.message}`);
         }
     });
-}
+});

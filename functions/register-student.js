@@ -1,86 +1,67 @@
 const sql = require('mssql');
-const bcrypt = require('bcryptjs');
 const dbConfig = require('../dbConfig');
 require('dotenv').config();
 
-console.log('Database Configuration:', {
-  user: process.env.DB_USER,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_NAME,
-});
-
 exports.handler = async (event) => {
-  const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-  };
-
-  // Handle preflight OPTIONS request
-  if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers,
-      body: "",
+    const headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
     };
-  }
 
-  try {
-    const body = JSON.parse(event.body);
-    const { fullName, rollNumber, studentClass, division, phoneNumber, SchoolName, password } = body;
-
-    // // Check for missing fields
-    // if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !SchoolName || !password) {
-    //   return {
-    //     statusCode: 400,
-    //     headers,
-    //     body: JSON.stringify({ message: 'All fields are required' })
-    //   };
-    // }
-
-    const pool = await sql.connect(dbConfig);
-
-    // Check if student already exists
-    const existingStudent = await pool.request()
-      .input('rollNumber', sql.VarChar, rollNumber)
-      .query('SELECT * FROM Students WHERE rollNumber = @rollNumber');
-
-    if (existingStudent.recordset.length > 0) {
-      return {
-        statusCode: 409,
-        headers,
-        body: JSON.stringify({ message: 'Student with this roll number already exists.' })
-      };
+    if (event.httpMethod === "OPTIONS") {
+        return { statusCode: 200, headers, body: "" };
     }
 
-    // Hash password before storing
-    const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+        const body = JSON.parse(event.body);
+        const { fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password } = body;
 
-    // Insert new student into database
-    await pool.request()
-      .input('FullName ', sql.VarChar, fullName)
-      .input('RollNumber ', sql.VarChar, rollNumber)
-      .input('Class', sql.VarChar, studentClass)
-      .input('Division', sql.VarChar, division)
-      .input('PhoneNumber', sql.VarChar, phoneNumber)
-      .input('SchoolName', sql.VarChar, SchoolName)
-      .input('PasswordHash ', sql.VarChar, hashedPassword)
-      .query(`
-        INSERT INTO Students (FullName , RollNumber , Class , Division , PhoneNumber, SchoolName, PasswordHash ) 
-        VALUES (@fullName, @rollNumber, @studentClass, @division, @phoneNumber,@SchoolName, @password)
-      `);
+        if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !password) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ message: 'All fields are required' })
+            };
+        }
 
-    return {
-      statusCode: 201,
-      headers,
-      body: JSON.stringify({ message: 'Student registered successfully' })
-    };
-  } catch (err) {
-    console.error("Database connection error:", err);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ message: 'Database error', error: err.message })
-    };
-  }
+        const pool = await sql.connect(dbConfig);
+
+        const existingStudent = await pool.request()
+            .input('rollNumber', sql.NVarChar, rollNumber)
+            .query('SELECT * FROM Students WHERE RollNumber = @rollNumber');
+
+        if (existingStudent.recordset.length > 0) {
+            return {
+                statusCode: 409,
+                headers,
+                body: JSON.stringify({ message: 'Student with this roll number already exists.' })
+            };
+        }
+
+        await pool.request()
+            .input('fullName', sql.NVarChar, fullName)
+            .input('rollNumber', sql.NVarChar, rollNumber)
+            .input('studentClass', sql.NVarChar, studentClass)
+            .input('division', sql.NVarChar, division)
+            .input('phoneNumber', sql.NVarChar, phoneNumber)
+            .input('passwordHash', sql.NVarChar, password) // Using hashed password
+            .query(`
+                INSERT INTO Students (FullName, RollNumber, Class, Division, PhoneNumber, PasswordHash) 
+                VALUES (@fullName, @rollNumber, @studentClass, @division, @phoneNumber, @passwordHash)
+            `);
+
+        return {
+            statusCode: 201,
+            headers,
+            body: JSON.stringify({ message: 'Student registered successfully' })
+        };
+    } catch (err) {
+        console.error("Database connection error:", err);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ message: 'Database error', error: err.message })
+        };
+    }
 };
