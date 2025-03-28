@@ -14,10 +14,14 @@ exports.handler = async (event) => {
     }
 
     try {
+        console.log("Received Event:", event.body); // Debug log
+
         const body = JSON.parse(event.body);
         const { fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password } = body;
 
-        if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !password) {
+        console.log("Parsed Body:", body); // Debug log
+
+        if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !password || !schoolName) {
             return {
                 statusCode: 400,
                 headers,

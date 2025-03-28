@@ -36,7 +36,7 @@ window.onclick = function (event) {
 
 // Register function
 document.addEventListener('DOMContentLoaded', () => {
-    const registerForm = document.getElementById('student-register-form'); // Correct form ID
+    const registerForm = document.getElementById('student-register-form');
 
     async function hashPassword(password) {
         const encoder = new TextEncoder();
@@ -58,6 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmPassword = document.getElementById('s-confirm-password').value;
         const schoolName = document.getElementById('s-school').value.trim();
 
+        if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !password || !schoolName) {
+            alert("All fields are required!");
+            return;
+        }
+
         if (password !== confirmPassword) {
             alert("Passwords do not match!");
             return;
@@ -65,20 +70,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const hashedPassword = await hashPassword(password);
 
-        const response = await fetch('https://classflow.sudeepbro.me/.netlify/functions/register-student', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password: hashedPassword
-            })
+        console.log("Submitting Data:", {
+            fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password: hashedPassword
         });
 
-        const result = await response.json();
-        if (response.ok) {
-            alert(result.message);
-            registerForm.reset();
-        } else {
-            alert(`Error: ${result.message}`);
+        try {
+            const response = await fetch('https://classflow.sudeepbro.me/.netlify/functions/register-student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password: hashedPassword
+                })
+            });
+
+            const result = await response.json();
+            console.log("Server Response:", result);
+
+            if (response.ok) {
+                alert(result.message);
+                registerForm.reset();
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            alert("Failed to register. Please try again.");
         }
     });
 });
