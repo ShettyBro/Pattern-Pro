@@ -2,16 +2,9 @@ const sql = require('mssql');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const dbConfig = require('../dbConfig');
-const crypto = require('crypto');
 require('dotenv').config();
 
-// Generate a secure secret key
-const generateSecretKey = () => {
-  return crypto.randomBytes(64).toString('hex');
-};
-
-// Replace with a secure secret key
-const JWT_SECRET = generateSecretKey();
+const JWT_SECRET = process.env.JWT_SECRET || "your_fallback_secret";
 
 exports.handler = async (event) => {
   const headers = {
@@ -29,21 +22,21 @@ exports.handler = async (event) => {
     };
   }
 
-  const body = JSON.parse(event.body);
-  const { rollno, password } = body;
-
-  if (!rollno || !password) {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ message: 'Rollno and password are required' })
-    };
-  }
-
   try {
+    const body = JSON.parse(event.body);
+    const { rollno, password } = body;
+
+    if (!rollno || !password) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ message: 'Rollno and password are required' })
+      };
+    }
+
     const pool = await sql.connect(dbConfig);
     const result = await pool.request()
-      .input('RollNumber', sql.VarChar, rollno)
+      .input('RollNumber', sql.VarChar, rollno) // Corrected input name
       .query('SELECT * FROM Students WHERE RollNumber = @RollNumber');
 
     if (result.recordset.length === 0) {
@@ -55,17 +48,27 @@ exports.handler = async (event) => {
     }
 
     const user = result.recordset[0];
-    const isMatch = await bcrypt.compare(password, user.password);
+
+    // Debugging: Check if PasswordHash exists
+    console.log("Fetched user:", user);
+
+    if (!user.PasswordHash) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ message: 'Error: Password not found in database' })
+      };
+    }
+
+    const isMatch = await bcrypt.compare(password, user.PasswordHash); // Fixed field name
 
     if (isMatch) {
-      // Generate JWT token with 5-hour expiry
       const token = jwt.sign(
-        { id: user.id, username: user.username },
+        { id: user.StudentID, rollno: user.RollNumber },
         JWT_SECRET,
         { expiresIn: '5h' }
       );
 
-      // Return token to client
       return {
         statusCode: 200,
         headers,
@@ -79,6 +82,7 @@ exports.handler = async (event) => {
       };
     }
   } catch (err) {
+    console.error("Login Error:", err);
     return {
       statusCode: 500,
       headers,
