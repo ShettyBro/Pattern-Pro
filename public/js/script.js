@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-
+//student register
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('student-register-form');
     const successModal = document.getElementById('success-modal');
