@@ -64,7 +64,7 @@ exports.handler = async (event) => {
             return {
                 statusCode: 200,
                 headers,
-                body: JSON.stringify({ message: 'Login successful', teacherId: teacher.TeacherID })
+                body: JSON.stringify({ message: 'Login successful', token})
             };
         }else{
             return {
