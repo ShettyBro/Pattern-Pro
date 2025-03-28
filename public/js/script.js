@@ -211,3 +211,76 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+// teacher login
+document.addEventListener("DOMContentLoaded", function () {
+    const loginForm = document.getElementById("teacher-login-form");
+
+    loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault(); // Prevent form submission reload
+
+        
+        const email = document.getElementById("t-email").value.trim();
+        const password = document.getElementById("t-password").value.trim();
+
+        if (!email || !password) {
+            alert("Please enter both Email and Password.");
+            return;
+        }
+
+    
+        const apiUrl = "https://classflow.sudeepbro.me/.netlify/functions/login-teachers"; 
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert("Login successful! Redirecting...");
+                localStorage.setItem("token", result.token); 
+                window.location.href = "dashboard.html"; // Redirect to dashboard
+            } else {
+                alert(result.message || "Login failed. Please check your credentials.");
+            }
+        } catch (error) {
+            console.error("Error during login:", error);
+            alert("Something went wrong. Please try again later.");
+        }
+    });
+});
+
+// upload assignements
+  document.getElementById("assignmentForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("studentName", document.getElementById("studentName").value);
+    formData.append("rollNumber", document.getElementById("rollNumber").value);
+    formData.append("assignmentTitle", document.getElementById("assignmentTitle").value);
+    formData.append("assignmentDesc", document.getElementById("assignmentDesc").value);
+    formData.append("submissionDateTime", document.getElementById("submissionDateTime").value);
+    formData.append("fileType", document.getElementById("fileType").value);
+    formData.append("assignmentFile", document.getElementById("assignmentFile").files[0]);
+
+    document.getElementById("submitText").innerText = "Uploading...";
+    
+    try {
+      const response = await fetch("/.netlify/functions/uploadAssignment", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      alert(result.message);
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Submission failed! Try again.");
+    } finally {
+      document.getElementById("submitText").innerText = "Submit Assignment";
+    }
+  });
