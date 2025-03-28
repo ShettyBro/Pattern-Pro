@@ -34,9 +34,84 @@ window.onclick = function (event) {
     }
 }
 
+// Update your logout functionality in script.js
+document.addEventListener('DOMContentLoaded', function () {
+    const logoutButton = document.getElementById('logoutButton');
+    
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            // Clear all auth-related data
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('tokenExpiration');
+            localStorage.removeItem('selectedMovieId'); // Clear any selected movie
+
+            // Replace the current history state
+            window.history.replaceState(null, '', 'index.html');
+            
+            // Clear browser history and redirect
+            window.location.replace('index.html');
+            
+            showModal('Successfully logged out. Thank you!');
+        });
+    }
+});
+
+
+// Handle Logout
+document.addEventListener('DOMContentLoaded', function () {
+    const logoutButton = document.getElementById('logoutButton');
+    
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            // Clear all auth-related data
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('tokenExpiration');
+            localStorage.removeItem('selectedMovieId'); // Clear any selected movie
+
+            // Set page to prevent cache on logout
+            window.location.replace('index.html'); // Redirect to login page
+
+            // Show logout confirmation modal
+            showModal('Successfully logged out. Thank you!');
+        });
+    }
+});
+
+// Prevent back navigation to protected pages after logout
+window.addEventListener('popstate', function(event) {
+    const protectedPaths = ['/home.html', '/player.html', '/about.html','/kannada.html','/telugu.html','/tamil.html','/hindi.html','/english.html'];
+    const currentPath = window.location.pathname;
+
+    // Check if trying to access protected page without valid token
+    const token = localStorage.getItem('authToken');
+    const expirationTime = localStorage.getItem('tokenExpiration');
+
+    if (protectedPaths.some(path => currentPath.includes(path))) {
+        if (!token || (expirationTime && Date.now() > expirationTime)) {
+            window.location.replace('home.html'); // Redirect to login
+        }
+    }
+});
+
+//this meta tag to your HTML files to prevent caching of protected pages
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.pathname.match(/(assignment|dashboard|english|hindi|kannada|maths|science|social|grading-portal|feedback-form|manage-classroom|teacher-dashboard)\.html/)) {
+        const meta = document.createElement('meta');
+        meta.setAttribute('http-equiv', 'Cache-Control');
+        meta.setAttribute('content', 'no-cache, no-store, must-revalidate');
+        document.head.appendChild(meta);
+    }
+});
+
+
+
+
 // Register function
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('student-register-form');
+    const successModal = document.getElementById('success-modal');
+    const modalMessage = document.getElementById('modal-message');
+    const closeModal = document.getElementById('close-modal');
 
     async function hashPassword(password) {
         const encoder = new TextEncoder();
@@ -70,10 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const hashedPassword = await hashPassword(password);
 
-        console.log("Submitting Data:", {
-            fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password: hashedPassword
-        });
-
         try {
             const response = await fetch('https://classflow.sudeepbro.me/.netlify/functions/register-student', {
                 method: 'POST',
@@ -84,10 +155,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const result = await response.json();
-            console.log("Server Response:", result);
 
             if (response.ok) {
-                alert(result.message);
+                modalMessage.textContent = result.message;
+                successModal.style.display = 'block';
+                setTimeout(() => {
+                    successModal.style.display = 'none';
+                    window.location.href = 'login-student.html';
+                }, 3000);
                 registerForm.reset();
             } else {
                 alert(`Error: ${result.message}`);
@@ -97,48 +172,63 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Failed to register. Please try again.");
         }
     });
+
+    closeModal.addEventListener('click', () => {
+        successModal.style.display = 'none';
+    });
 });
 
 
-// student Login function
 document.addEventListener("DOMContentLoaded", function () {
     const loginForm = document.querySelector("form");
+    const successModal = document.getElementById("success-modal");
+    const modalMessage = document.getElementById("modal-message");
+    const closeModal = document.getElementById("close-modal");
     
     loginForm.addEventListener("submit", async function (event) {
-      event.preventDefault(); // Prevent page reload
-  
-      const rollno = document.getElementById("s-login-id").value.trim();
-      const password = document.getElementById("s-password").value.trim();
-  
-      if (!rollno || !password) {
-        alert("Please enter both Roll Number and Password.");
-        return;
-      }
-  
-      try {
-        const response = await fetch("https://classflow.sudeepbro.me/.netlify/functions/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ rollno, password }),
-        });
-  
-        const data = await response.json();
-  
-        if (response.ok) {
-          alert("Login successful!");
-          localStorage.setItem("token", data.token); // Store token in localStorage
-          window.location.href = "dashboard.html"; // Redirect to dashboard
-        } else {
-          alert(data.message || "Invalid credentials, please try again.");
+        event.preventDefault(); // Prevent page reload
+
+        const rollno = document.getElementById("s-login-id").value.trim();
+        const password = document.getElementById("s-password").value.trim();
+
+        if (!rollno || !password) {
+            alert("Please enter both Roll Number and Password.");
+            return;
         }
-      } catch (error) {
-        console.error("Login error:", error);
-        alert("Something went wrong. Please try again later.");
-      }
+
+        try {
+            const response = await fetch("https://classflow.sudeepbro.me/.netlify/functions/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ rollno, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                modalMessage.textContent = "Login successful!";
+                successModal.style.display = "block";
+                localStorage.setItem("token", data.token); // Store token in localStorage
+                setTimeout(() => {
+                    successModal.style.display = "none";
+                    window.location.href = "dashboard.html"; // Redirect to dashboard
+                }, 3000);
+            } else {
+                alert(data.message || "Invalid credentials, please try again.");
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            alert("Something went wrong. Please try again later.");
+        }
     });
-  });
+
+    closeModal.addEventListener("click", () => {
+        successModal.style.display = "none";
+    });
+});
+
   
 // teachers register
 document.addEventListener("DOMContentLoaded", function () {
@@ -255,32 +345,79 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // upload assignements
-  document.getElementById("assignmentForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("studentName", document.getElementById("studentName").value);
-    formData.append("rollNumber", document.getElementById("rollNumber").value);
-    formData.append("assignmentTitle", document.getElementById("assignmentTitle").value);
-    formData.append("assignmentDesc", document.getElementById("assignmentDesc").value);
-    formData.append("submissionDateTime", document.getElementById("submissionDateTime").value);
-    formData.append("fileType", document.getElementById("fileType").value);
-    formData.append("assignmentFile", document.getElementById("assignmentFile").files[0]);
-
-    document.getElementById("submitText").innerText = "Uploading...";
-    
-    try {
-      const response = await fetch("/.netlify/functions/uploadAssignment", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-      alert(result.message);
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Submission failed! Try again.");
-    } finally {
-      document.getElementById("submitText").innerText = "Submit Assignment";
-    }
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("assignmentForm");
+    const fileInput = document.getElementById("assignmentFile");
+    const fileInfo = document.querySelector(".file-info");
+  
+    fileInput.addEventListener("change", function () {
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        fileInfo.textContent = `Selected file: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+      }
+    });
+  
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+  
+      // Get form values
+      const studentName = document.getElementById("studentName").value.trim();
+      const rollNumber = document.getElementById("rollNumber").value.trim();
+      const assignmentTitle = document.getElementById("assignmentTitle").value.trim();
+      const assignmentDesc = document.getElementById("assignmentDesc").value.trim();
+      const submissionDateTime = document.getElementById("submissionDateTime").value.trim();
+      const fileType = document.getElementById("fileType").value;
+  
+      if (!fileInput.files.length) {
+        alert("Please select a file to upload.");
+        return;
+      }
+  
+      const file = fileInput.files[0];
+  
+      // Convert file to base64
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async function () {
+        const base64String = reader.result.split(",")[1]; // Remove prefix data
+  
+        // Prepare request payload
+        const formData = {
+          studentName,
+          rollNumber,
+          assignmentTitle,
+          assignmentDesc,
+          submissionDateTime,
+          fileType,
+          fileData: base64String,
+        };
+  
+        try {
+          const response = await fetch("https://classflow.sudeepbro.me/.netlify/functions/assignment-up", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
+  
+          const result = await response.json();
+          if (response.ok) {
+            alert("Assignment submitted successfully!");
+            console.log("File URL:", result.fileUrl);
+          } else {
+            throw new Error(result.error || "Submission failed.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("An error occurred while uploading the assignment.");
+        }
+      };
+  
+      reader.onerror = function (error) {
+        console.error("File reading error:", error);
+        alert("Failed to read the file.");
+      };
+    });
   });
+  

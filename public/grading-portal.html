@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grading System | Digital Classroom</title>
   <link rel="stylesheet" href="../css/style.css">
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Retrieve the token and its expiration time from local storage
+        const token = localStorage.getItem('authToken');
+        const expirationTime = localStorage.getItem('tokenExpiration');
+
+        // Check if the token is missing or expired
+        if (!token || (expirationTime && Date.now() > expirationTime)) {
+            // Clear the token and expiration time from local storage
+            localStorage.removeItem('authToken'); // Make sure to use 'authToken'
+            localStorage.removeItem('tokenExpiration');
+            // Redirect to the login page
+            // window.location.href = 'index.html'; // Redirect to login page
+        } else {
+            // Token is valid, redirect to home page
+            window.location.href = 'home.html'; // Redirect to home page
+        }
+    });
+</script>
   <style>
     /* Grading System Specific Styles */
     .grading-container {
@@ -119,6 +138,10 @@
       .grade-options {
         grid-template-columns: repeat(2, 1fr);
       }
+    }
+    
+    ::-webkit-scrollbar{
+        display: none;
     }
   </style>
 </head>

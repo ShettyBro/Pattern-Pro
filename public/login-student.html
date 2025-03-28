@@ -5,23 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Digital Classroom</title>
   <link rel="stylesheet" href="css/style.css">
-  <script src="./js/script.js"></script>
+
 </head>
 <body>
   <div class="form-container">
     <h1>Student Login</h1>
-    
-    <!-- Role Toggle Links (Using #targets) -->
-    <!-- <div class="role-toggle"> -->
-      <!-- <a href="./login-student.html">Student</a> -->
-      <!-- <a href="./login-teacher.html">Teacher</a> -->
-    <!-- </div> -->
-
-    <!-- Student Login (Default) -->
     <div id="student-login" class="login-section">
       <form>
         <div class="form-group">
-          <label for="s-login-id">Roll No. </label>
+          <label for="s-login-id">Roll No</label>
           <input type="text" id="s-login-id" required>
         </div>
         <div class="form-group">
@@ -35,5 +27,12 @@
       New user? <a href="./register-student.html">Register as Student</a> or <a href="./register-teacher.html">Teacher</a>
     </p>
   </div>
+   <<!-- Modal for notifications -->
+   <div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p id="modal-message" class="modal-message"></p>
+    </div>
+</div>
 </body>
 </html>

@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Digital Classroom</title>
   <link rel="stylesheet" href="css/style.css">
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Retrieve the token and its expiration time from local storage
+        const token = localStorage.getItem('authToken');
+        const expirationTime = localStorage.getItem('tokenExpiration');
+
+        // Check if the token is missing or expired
+        if (!token || (expirationTime && Date.now() > expirationTime)) {
+            // Clear the token and expiration time from local storage
+            localStorage.removeItem('authToken'); // Make sure to use 'authToken'
+            localStorage.removeItem('tokenExpiration');
+            // Redirect to the login page
+            // window.location.href = 'index.html'; // Redirect to login page
+        } else {
+            // Token is valid, redirect to home page
+            window.location.href = 'home.html'; // Redirect to home page
+        }
+    });
+</script>
 </head>
 <body>
   <header class="dashboard-header">
@@ -17,12 +36,12 @@
 
   <main class="dashboard-main">
     <div class="subject-grid">
-      <a href="kannada.html" class="subject-btn kannada">Kannada</a>
-      <a href="english.html" class="subject-btn english">English</a>
-      <a href="hindi.html" class="subject-btn hindi">Hindi</a>
-      <a href="maths.html" class="subject-btn maths">Maths</a>
-      <a href="science.html" class="subject-btn science">Science</a>
-      <a href="social.html" class="subject-btn social">Social Science</a>
+      <a href="kannada.html" class="subject-btn img-btn"><img src="./css/assets/kannada.png" alt="Kannada-image" class="subject-img"></a>
+      <a href="english.html" class="subject-btn img-btn"><img src="./css/assets/english.png" alt="English-image" class="subject-img"></a>
+      <a href="hindi.html" class="subject-btn img-btn"><img src="./css/assets/hindi.png" alt="Hindi-image" class="subject-img"></a>
+      <a href="maths.html" class="subject-btn img-btn"><img src="./css/assets/maths.png" alt="Maths-image" class="subject-img"></a>
+      <a href="science.html" class="subject-btn img-btn"><img src="./css/assets/science.jpg" alt="Science-image" class="subject-img"></a>
+      <a href="social.html" class="subject-btn img-btn"><img src="./css/assets/social.png" alt="Social-image" class="subject-img"></a>
     </div>
   </main>
 </body>

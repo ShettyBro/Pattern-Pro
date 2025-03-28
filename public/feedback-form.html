@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Feedback | Digital Classroom</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Retrieve the token and its expiration time from local storage
+        const token = localStorage.getItem('authToken');
+        const expirationTime = localStorage.getItem('tokenExpiration');
+
+        // Check if the token is missing or expired
+        if (!token || (expirationTime && Date.now() > expirationTime)) {
+            // Clear the token and expiration time from local storage
+            localStorage.removeItem('authToken'); // Make sure to use 'authToken'
+            localStorage.removeItem('tokenExpiration');
+            // Redirect to the login page
+            // window.location.href = 'index.html'; // Redirect to login page
+        } else {
+            // Token is valid, redirect to home page
+            window.location.href = 'home.html'; // Redirect to home page
+        }
+    });
+</script>
+  <style>
+    /* Feedback Form Specific Styles */
+    .feedback-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+    }
+    
+    .feedback-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .form-group {
+      margin-bottom: 2rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.8rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    
+    textarea {
+      min-height: 120px;
+    }
+    
+    .rating-container {
+      display: flex;
+      justify-content: space-between;
+      margin: 1.5rem 0;
+    }
+    
+    .rating-option {
+      text-align: center;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    
+    .rating-option:hover {
+      background: #f5f5f5;
+    }
+    
+    .rating-option.selected {
+      background: #e3f2fd;
+      border: 1px solid #bbdefb;
+    }
+    
+    .rating-emoji {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .checkbox-group {
+      margin: 0.5rem 0;
+    }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+    }
+    
+    .checkbox-label input {
+      width: auto;
+      margin-right: 0.8rem;
+    }
+    
+    .submit-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 1rem;
+      font-size: 1.1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+    
+    .submit-btn:hover {
+      background: #388E3C;
+      transform: translateY(-2px);
+    }
+    
+    ::-webkit-scrollbar{
+        display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="feedback-container">
+    <div class="feedback-header">
+      <h1>Teacher Feedback Form</h1>
+      <p>Help improve teaching quality by providing honest feedback</p>
+    </div>
+    
+    <form id="feedbackForm">
+      <!-- Basic Information -->
+      <div class="form-group">
+        <label for="teacherName">Teacher Name</label>
+        <select id="teacherName" required>
+          <option value="">Select Teacher</option>
+          <option value="sudeep">Mr. Sudeep Shivashettar (Mathematics)</option>
+          <option value="rakshita">Miss.Rakshita T (Kannada)</option>
+          <option value="abhi">Mr. Abhi(English)</option>
+          <option value="ananya">Miss. Ananya K(Social Science)</option>
+          <option value="pratik">Mr.Pratik(Hindi)</option>
+          <option value="kalal">Mr. Venkatesh Kalal(Science)</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="studentName">Your Name (Optional)</label>
+        <input type="text" id="studentName">
+      </div>
+      
+      <div class="form-group">
+        <label for="className">Class & Division</label>
+        <input type="text" id="className" required>
+      </div>
+      
+      <!-- Teaching Evaluation -->
+      <div class="form-group">
+        <label>Overall Teaching Effectiveness</label>
+        <div class="rating-container">
+          <div class="rating-option" data-rating="5">
+            <div class="rating-emoji">😍</div>
+            <div>Excellent</div>
+          </div>
+          <div class="rating-option" data-rating="4">
+            <div class="rating-emoji">😊</div>
+            <div>Good</div>
+          </div>
+          <div class="rating-option" data-rating="3">
+            <div class="rating-emoji">😐</div>
+            <div>Average</div>
+          </div>
+          <div class="rating-option" data-rating="2">
+            <div class="rating-emoji">😕</div>
+            <div>Below Avg</div>
+          </div>
+          <div class="rating-option" data-rating="1">
+            <div class="rating-emoji">😞</div>
+            <div>Poor</div>
+          </div>
+        </div>
+        <input type="hidden" id="teachingRating" required>
+      </div>
+      
+      <!-- Specific Feedback -->
+      <div class="form-group">
+        <label>What aspects did you like about the teaching? (Select all that apply)</label>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="likedAspects" value="clarity"> Clear explanations
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="likedAspects" value="engagement"> Engaging teaching style
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="likedAspects" value="examples"> Practical examples
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="likedAspects" value="pace"> Good pace of teaching
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="likedAspects" value="availability"> Availability for doubts
+          </label>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="improvementAreas">Areas for Improvement</label>
+        <textarea id="improvementAreas" placeholder="What could the teacher do better?"></textarea>
+      </div>
+      
+      <!-- Additional Feedback -->
+      <div class="form-group">
+        <label for="generalFeedback">Additional Comments</label>
+        <textarea id="generalFeedback" placeholder="Any other feedback about the teaching experience..."></textarea>
+      </div>
+      
+      <!-- Anonymous Submission -->
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="anonymousSubmission"> 
+          Submit feedback anonymously
+        </label>
+      </div>
+      
+      <button type="submit" class="submit-btn">Submit Feedback</button>
+    </form>
+  </div>
+
+  <script>
+    // Rating selection
+    const ratingOptions = document.querySelectorAll('.rating-option');
+    const ratingInput = document.getElementById('teachingRating');
+    
+    ratingOptions.forEach(option => {
+      option.addEventListener('click', function() {
+        // Remove previous selection
+        ratingOptions.forEach(opt => opt.classList.remove('selected'));
+        
+        // Select current option
+        this.classList.add('selected');
+        ratingInput.value = this.dataset.rating;
+      });
+    });
+    
+    // Form submission
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form values
+      const formData = {
+        teacher: document.getElementById('teacherName').value,
+        student: document.getElementById('studentName').value || 'Anonymous',
+        class: document.getElementById('className').value,
+        rating: ratingInput.value,
+        likedAspects: Array.from(document.querySelectorAll('input[name="likedAspects"]:checked')).map(el => el.value),
+        improvements: document.getElementById('improvementAreas').value,
+        comments: document.getElementById('generalFeedback').value,
+        isAnonymous: document.getElementById('anonymousSubmission').checked
+      };
+      
+      console.log('Feedback submitted:', formData);
+      alert('Thank you for your valuable feedback!');
+      this.reset();
+      ratingOptions.forEach(opt => opt.classList.remove('selected'));
+      
+      // In real app: send data to backend
+      // fetch('/api/feedback', { method: 'POST', body: JSON.stringify(formData) });
+    });
+  </script>
+</body>
+</html>

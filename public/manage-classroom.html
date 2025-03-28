@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Classroom | Digital Classroom</title>
   <link rel="stylesheet" href="../css/style.css">
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Retrieve the token and its expiration time from local storage
+        const token = localStorage.getItem('authToken');
+        const expirationTime = localStorage.getItem('tokenExpiration');
+
+        // Check if the token is missing or expired
+        if (!token || (expirationTime && Date.now() > expirationTime)) {
+            // Clear the token and expiration time from local storage
+            localStorage.removeItem('authToken'); // Make sure to use 'authToken'
+            localStorage.removeItem('tokenExpiration');
+            // Redirect to the login page
+            // window.location.href = 'index.html'; // Redirect to login page
+        } else {
+            // Token is valid, redirect to home page
+            window.location.href = 'home.html'; // Redirect to home page
+        }
+    });
+</script>
   <style>
     /* Classroom Management Specific Styles */
     .classroom-form-container {
@@ -100,6 +119,9 @@
         grid-column: span 1;
       }
     }
+    ::-webkit-scrollbar{
+        display: none;
+    }
   </style>
 </head>
 <body>
@@ -122,7 +144,14 @@
             <option value="">Select Class</option>
             <option value="1">Class 1</option>
             <option value="2">Class 2</option>
-            <!-- Add more classes as needed -->
+            <option value="2">Class 3</option>
+            <option value="2">Class 4</option>
+            <option value="2">Class 5</option>
+            <option value="2">Class 6</option>
+            <option value="2">Class 7</option>
+            <option value="2">Class 8</option>
+            <option value="2">Class 9</option>
+            <option value="2">Class 10</option>
           </select>
         </div>
         
