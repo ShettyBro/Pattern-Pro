@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@azure/storage-blob": "^12.27.0",
+    "@supabase/supabase-js": "^2.49.3",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",
     "mssql": "^11.0.1",

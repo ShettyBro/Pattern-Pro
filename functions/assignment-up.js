@@ -1,65 +1,47 @@
-const { BlobServiceClient } = require("@azure/storage-blob");
-const sql = require("mssql");
+const { createClient } = require("@supabase/supabase-js");
+
+// Initialize Supabase
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 exports.handler = async (event) => {
   try {
-    // Check for POST method
     if (event.httpMethod !== "POST") {
       return { statusCode: 405, body: "Method Not Allowed" };
     }
 
-    // Parse form-data
     const formData = JSON.parse(event.body);
-    const { studentName, rollNumber, assignmentTitle, assignmentDesc, submissionDateTime, fileType } = formData;
-    
-    // Azure Blob Storage Configuration
-    const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
-    const containerName = "assignments";
-    const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
-    const containerClient = blobServiceClient.getContainerClient(containerName);
+    const { studentName, rollNumber, assignmentTitle, fileData, fileType } = formData;
 
-    // Generate unique filename
-    const fileName = `${rollNumber}-${Date.now()}.pdf`;  // Change extension as needed
-    const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+    // Convert base64 file data to Buffer
+    const fileBuffer = Buffer.from(fileData, "base64");
+    const fileName = `${rollNumber}-${Date.now()}.${fileType}`;
 
-    // Upload file to Blob Storage
-    const fileBuffer = Buffer.from(formData.assignmentFile, "base64");
-    await blockBlobClient.uploadData(fileBuffer);
-
-    // Get file URL
-    const fileUrl = blockBlobClient.url;
-
-    // Azure SQL Connection
-    const pool = await sql.connect({
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      server: process.env.DB_SERVER,
-      database: process.env.DB_NAME,
-      options: { encrypt: true }
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage.from("assignments").upload(fileName, fileBuffer, {
+      contentType: `application/${fileType}`,
     });
 
-    // Insert record into Azure SQL Database
-    await pool.request()
-      .input("studentName", sql.VarChar, studentName)
-      .input("rollNumber", sql.VarChar, rollNumber)
-      .input("assignmentTitle", sql.VarChar, assignmentTitle)
-      .input("assignmentDesc", sql.VarChar, assignmentDesc)
-      .input("submissionDateTime", sql.DateTime, submissionDateTime)
-      .input("fileType", sql.VarChar, fileType)
-      .input("fileUrl", sql.VarChar, fileUrl)
-      .query(`
-        INSERT INTO Assignments (StudentName, RollNumber, AssignmentTitle, AssignmentDesc, SubmissionDateTime, FileType, FileUrl)
-        VALUES (@studentName, @rollNumber, @assignmentTitle, @assignmentDesc, @submissionDateTime, @fileType, @fileUrl)
-      `);
+    if (error) throw error;
+
+    // Get the public URL
+    const { data: urlData } = supabase.storage.from("assignments").getPublicUrl(fileName);
+    const fileUrl = urlData.publicUrl;
+
+    // Store file URL in Supabase Database
+    const { error: dbError } = await supabase
+      .from("assignments")
+      .insert([{ studentName, rollNumber, assignmentTitle, fileUrl }]);
+
+    if (dbError) throw dbError;
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: "Assignment uploaded successfully!", fileUrl })
+      body: JSON.stringify({ message: "File uploaded successfully", fileUrl }),
     };
   } catch (error) {
     console.error("Error:", error);
-    return { statusCode: 500, body: JSON.stringify({ error: "Internal Server Error" }) };
+    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 };
-
-
