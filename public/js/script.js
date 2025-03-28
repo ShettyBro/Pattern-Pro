@@ -67,7 +67,7 @@ if (registerForm) {
         }
 
         try {
-            const response = await fetch('https://filmyadda.sudeepbro.me/.netlify/functions/register', {
+            const response = await fetch('https://classflow.sudeepbro.me/.netlify/functions/register-student', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ fullName, rollNumber, studentClass, division, phoneNumber, password })
