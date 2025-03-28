@@ -106,13 +106,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 //student register
-document.addEventListener("DOMContentLoaded", () => {
-    const registerForm = document.getElementById("student-register-form");
-    
-    if (!registerForm) return; // Ensure form exists before adding event listener
-
-    registerForm.addEventListener("submit", async (event) => {
-        event.preventDefault(); // Prevent default form submission
+const registerForm = document.getElementById("student-register-form"); 
+if (registerForm) {
+    registerForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
         // Get button and disable it while submitting
         const registerButton = document.getElementById("registerButton");
@@ -134,11 +131,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const passwordRegex = /^(?=.*[!@#$%^&*])(?=.{8,})/;
 
         if (!passwordRegex.test(password)) {
-            if (passwordError) {
-                passwordError.innerHTML = "<span style='color: red;'>Invalid Password <br> * Minimum 8 characters <br> * At least one special symbol (!@#$%^&*).</span>";
-            }
-            registerButton.disabled = false;
-            registerButton.textContent = "Register";
+            passwordError.innerHTML = "<span style='color: red;'>Invalid Password <br>  * Mim 8 characters <br> * One special symbol (!@#$%^&*).</span>";
+            hasError = true;`1`
+            registerButton.disabled = false; // Re-enable the button if validation fails
+            registerButton.textContent = 'Register'; // Reset button text
             return;
         } else {
             if (passwordError) passwordError.innerHTML = ""; // Clear error if valid
@@ -166,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("Server Response:", responseData);
 
             if (response.ok) {
-                showModal("Registration successful! Redirecting to login...", "login.html");
+                showModal("Registration successful! Redirecting to login...", "login-student.html");
             } else {
                 showModal(`Registration failed: ${responseData}`);
             }
@@ -178,7 +174,8 @@ document.addEventListener("DOMContentLoaded", () => {
             registerButton.textContent = "Register";
         }
     });
-});
+}
+
 
 // Function to show a modal message
 function showModal(message, redirectUrl = null) {
