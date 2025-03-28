@@ -108,11 +108,10 @@ document.addEventListener('DOMContentLoaded', function() {
 //student register
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('student-register-form');
-    const successModal = document.getElementById('modal');
+    const successModal = document.getElementById('modal'); // Correct modal ID
     const modalMessage = document.getElementById('modal-message');
-    const closeModal = document.getElementById('close-modal'); // Ensure correct ID
-
-    const registerButton = document.getElementById('registerButton');
+    const closeModal = document.getElementById('close-modal'); // Added ID to HTML
+    const registerButton = document.getElementById('registerButton'); // Ensure it exists in HTML
 
     async function hashPassword(password) {
         const encoder = new TextEncoder();
@@ -162,17 +161,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
+            const result = await response.json();
+
             if (response.ok) {
                 modalMessage.textContent = 'Registration successful! Redirecting to login...';
                 successModal.style.display = 'block';
+
                 setTimeout(() => {
                     successModal.style.display = 'none';
                     window.location.href = 'login-student.html';
                 }, 3000);
+
                 registerForm.reset();
             } else {
-                const result = await response.text();
-                modalMessage.textContent = `Registration failed: ${result}`;
+                modalMessage.textContent = `Registration failed: ${result.message}`;
                 successModal.style.display = 'block';
             }
         } catch (error) {
@@ -189,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
         successModal.style.display = 'none';
     });
 });
-
 
 // student login
 document.addEventListener("DOMContentLoaded", function () {
