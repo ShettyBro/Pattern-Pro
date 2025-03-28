@@ -1,75 +1,260 @@
-/* login page */ 
-.form {
-    --input-focus: #2d8cf0;
-    --font-color: #323232;
-    --font-color-sub: #666;
-    --bg-color: beige;
-    --main-color: black;
-    padding: 20px;
-    background: lightblue;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 20px;
-    border-radius: 5px;
-    border: 2px solid var(--main-color);
-    box-shadow: 4px 4px var(--main-color);
+/* Base Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    padding: 0;
+    color: #333;
   }
   
-  .title {
-    color: var(--font-color);
-    font-weight: 900;
-    font-size: 20px;
-    margin-bottom: 25px;
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
   }
   
-  .title span {
-    color: var(--font-color-sub);
-    font-weight: 600;
-    font-size: 17px;
+  /* Header */
+  header h1 {
+    color: #2c3e50;
+    font-size: 2.5rem;
   }
   
-  .input {
-    width: 250px;
-    height: 40px;
-    border-radius: 5px;
-    border: 2px solid var(--main-color);
-    background-color: var(--bg-color);
-    box-shadow: 4px 4px var(--main-color);
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--font-color);
-    padding: 5px 10px;
-    outline: none;
-  }
-  
-  .input::placeholder {
-    color: var(--font-color-sub);
-    opacity: 0.8;
-  }
-  
-  .input:focus {
-    border: 2px solid var(--input-focus);
-  }
-  
-  .login-with {
-    display: flex;
-    gap: 20px;
-  }
-  
-  .button-confirm {
-    margin: 50px auto 0 auto;
-    width: 120px;
-    height: 40px;
-    border-radius: 5px;
-    border: 2px solid var(--main-color);
-    background-color: var(--bg-color);
-    box-shadow: 4px 4px var(--main-color);
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--font-color);
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    background: #3498db;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0.5rem;
     cursor: pointer;
   }
   
+  .btn-outline {
+    background: transparent;
+    border: 2px solid #3498db;
+    color: #3498db;
+  }
   
+  /* Forms */
+  .form-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  /* Role Toggle */
+  .role-toggle {
+    display: flex;
+    margin-bottom: 1.5rem;
+  }
+  
+  .role-toggle button {
+    flex: 1;
+    padding: 0.8rem;
+    border: none;
+    background: #eee;
+    cursor: pointer;
+  }
+  
+  .role-toggle button.active {
+    background: #3498db;
+    color: white;
+  }
+  
+  /* Utility */
+  .hidden {
+    display: none;
+  }
+  /* Role Toggle Styling */
+.role-toggle {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .role-toggle a {
+    flex: 1;
+    padding: 0.8rem;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    background: #eee;
+  }
+  
+  .role-toggle a.active {
+    background: #3498db;
+    color: white;
+  }
+  
+  /* Hide all login sections by default */
+  .login-section {
+    display: none;
+  }
+  
+  /* Show the targeted section */
+  .login-section:target {
+    display: block;
+  }
+  
+  /* Show student login by default if no target */
+  #student-login {
+    display: block;
+  }
+  
+  #student-login:target ~ #teacher-login,
+  #teacher-login:target ~ #student-login {
+    display: none;
+  }
+  /* Global Styles */
+:root {
+    --primary: #3498db;
+    --secondary: #2ecc71;
+    --dark: #2c3e50;
+    --light: #ecf0f1;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .header h1 {
+    color: var(--dark);
+    font-size: 2.5rem;
+  }
+  
+  /* Role Selection Cards */
+  .role-selection {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .role-card {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .role-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .role-card.student {
+    border-top: 4px solid var(--primary);
+  }
+  
+  .role-card.teacher {
+    border-top: 4px solid var(--secondary);
+  }
+  
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 1rem;
+    transition: background 0.3s ease;
+  }
+  
+  .btn:hover {
+    background: #2980b9;
+  }
+  
+  .teacher .btn {
+    background: var(--secondary);
+  }
+  
+  .teacher .btn:hover {
+    background: #27ae60;
+  }
+  
+  /* Form Styles (Used in login/register pages) */
+  .form-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--dark);
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  .form-title {
+    text-align: center;
+    color: var(--dark);
+    margin-bottom: 2rem;
+  }
+  
+  .form-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+  }

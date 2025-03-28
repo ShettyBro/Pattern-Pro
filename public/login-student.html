@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Digital Classroom</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="form-container">
+    <h1>Student Login</h1>
+    
+    <!-- Role Toggle Links (Using #targets) -->
+    <!-- <div class="role-toggle"> -->
+      <!-- <a href="./login-student.html">Student</a> -->
+      <!-- <a href="./login-teacher.html">Teacher</a> -->
+    <!-- </div> -->
+
+    <!-- Student Login (Default) -->
+    <div id="student-login" class="login-section">
+      <form>
+        <div class="form-group">
+          <label for="s-login-id">Roll No. / Phone</label>
+          <input type="text" id="s-login-id" required>
+        </div>
+        <div class="form-group">
+          <label for="s-password">Password</label>
+          <input type="password" id="s-password" required>
+        </div>
+        <button type="submit" class="btn">Login as Student</button>
+      </form>
+    </div>
+    <p class="register-link">
+      New user? <a href="./register-student.html">Register as Student</a> or <a href="./register-teacher.html">Teacher</a>
+    </p>
+  </div>
+</body>
+</html>
