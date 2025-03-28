@@ -55,7 +55,7 @@ exports.handler = async (event) => {
 
         if (isPasswordValid) {
             const token = jwt.sign(
-                    { id: user.StudentID, rollno: user.RollNumber },
+                    { id: teacher.TeacherID, email: teacher.Email },
                     JWT_SECRET,
                     { expiresIn: '5h' }
                   );
