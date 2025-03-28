@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-
+// student login
 document.addEventListener("DOMContentLoaded", function () {
     const loginForm = document.querySelector("form");
     const successModal = document.getElementById("success-modal");
@@ -305,11 +305,13 @@ document.addEventListener("DOMContentLoaded", function () {
 // teacher login
 document.addEventListener("DOMContentLoaded", function () {
     const loginForm = document.getElementById("teacher-login-form");
+    const successModal = document.getElementById("success-modal");
+    const modalMessage = document.getElementById("modal-message");
+    const closeModal = document.getElementById("close-modal");
 
     loginForm.addEventListener("submit", async function (event) {
         event.preventDefault(); // Prevent form submission reload
 
-        
         const email = document.getElementById("t-email").value.trim();
         const password = document.getElementById("t-password").value.trim();
 
@@ -318,7 +320,6 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-    
         const apiUrl = "https://classflow.sudeepbro.me/.netlify/functions/login-teachers"; 
 
         try {
@@ -331,9 +332,13 @@ document.addEventListener("DOMContentLoaded", function () {
             const result = await response.json();
 
             if (response.ok) {
-                alert("Login successful! Redirecting...");
-                localStorage.setItem("token", result.token); 
-                window.location.href = "dashboard.html"; // Redirect to dashboard
+                modalMessage.textContent = "Login successful!";
+                successModal.style.display = "block";
+                localStorage.setItem("token", result.token);
+                setTimeout(() => {
+                    successModal.style.display = "none";
+                    window.location.href = "teacher-dashboard.html";
+                }, 3000);
             } else {
                 alert(result.message || "Login failed. Please check your credentials.");
             }
@@ -342,7 +347,12 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Something went wrong. Please try again later.");
         }
     });
+
+    closeModal.addEventListener("click", () => {
+        successModal.style.display = "none";
+    });
 });
+
 
 // upload assignements
 document.addEventListener("DOMContentLoaded", function () {
