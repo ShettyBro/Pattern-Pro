@@ -58,15 +58,15 @@ exports.handler = async (event) => {
 
     // Insert new student into database
     await pool.request()
-      .input('fullName', sql.VarChar, fullName)
-      .input('rollNumber', sql.VarChar, rollNumber)
-      .input('studentClass', sql.VarChar, studentClass)
-      .input('division', sql.VarChar, division)
-      .input('phoneNumber', sql.VarChar, phoneNumber)
+      .input('FullName ', sql.VarChar, fullName)
+      .input('RollNumber ', sql.VarChar, rollNumber)
+      .input('Class', sql.VarChar, studentClass)
+      .input('Division', sql.VarChar, division)
+      .input('PhoneNumber', sql.VarChar, phoneNumber)
       .input('SchoolName', sql.VarChar, SchoolName)
-      .input('password', sql.VarChar, hashedPassword)
+      .input('PasswordHash ', sql.VarChar, hashedPassword)
       .query(`
-        INSERT INTO Students (fullName, rollNumber, studentClass, division, phoneNumber, SchoolName, password) 
+        INSERT INTO Students (FullName , RollNumber , Class , Division , PhoneNumber, SchoolName, PasswordHash ) 
         VALUES (@fullName, @rollNumber, @studentClass, @division, @phoneNumber,@SchoolName, @password)
       `);
 
