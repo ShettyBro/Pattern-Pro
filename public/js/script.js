@@ -52,6 +52,7 @@ if (registerForm) {
         const division = document.getElementById('division').value.trim();
         const phoneNumber = document.getElementById('phoneNumber').value.trim();
         const password = document.getElementById('password').value;
+        const SchoolName =document.getElementById('s-school').value.trim();
 
     
         const passwordRegex = /^(?=.*[!@#$%^&*])(?=.{8,})/;
@@ -70,7 +71,7 @@ if (registerForm) {
             const response = await fetch('https://classflow.sudeepbro.me/.netlify/functions/register-student', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullName, rollNumber, studentClass, division, phoneNumber, password })
+                body: JSON.stringify({ fullName, rollNumber, studentClass, division, phoneNumber, SchoolName, password })
             });
 
             if (response.ok) {

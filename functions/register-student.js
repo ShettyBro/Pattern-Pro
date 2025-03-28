@@ -27,10 +27,10 @@ exports.handler = async (event) => {
 
   try {
     const body = JSON.parse(event.body);
-    const { fullName, rollNumber, studentClass, division, phoneNumber, password } = body;
+    const { fullName, rollNumber, studentClass, division, phoneNumber, SchoolName, password } = body;
 
     // Check for missing fields
-    if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !password) {
+    if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !SchoolName || !password) {
       return {
         statusCode: 400,
         headers,
@@ -63,10 +63,11 @@ exports.handler = async (event) => {
       .input('studentClass', sql.VarChar, studentClass)
       .input('division', sql.VarChar, division)
       .input('phoneNumber', sql.VarChar, phoneNumber)
+      .input('SchoolName', sql.VarChar, SchoolName)
       .input('password', sql.VarChar, hashedPassword)
       .query(`
-        INSERT INTO Students (fullName, rollNumber, studentClass, division, phoneNumber, password) 
-        VALUES (@fullName, @rollNumber, @studentClass, @division, @phoneNumber, @password)
+        INSERT INTO Students (fullName, rollNumber, studentClass, division, phoneNumber, SchoolName, password) 
+        VALUES (@fullName, @rollNumber, @studentClass, @division, @phoneNumber,@SchoolName, @password)
       `);
 
     return {
