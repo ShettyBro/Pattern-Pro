@@ -110,9 +110,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('student-register-form');
     const successModal = document.getElementById('modal'); // Correct modal ID
     const modalMessage = document.getElementById('modal-message');
-    const closeModal = document.getElementById('close-modal'); // Added ID to HTML
-    const registerButton = document.getElementById('registerButton'); // Ensure it exists in HTML
+    const closeModal = document.querySelector('.close'); // Ensure close button exists
+    const registerButton = document.getElementById('registerButton'); // Ensure it's in HTML
 
+    // Function to hash the password
     async function hashPassword(password) {
         const encoder = new TextEncoder();
         const data = encoder.encode(password);
@@ -121,12 +122,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
     }
 
+    // Form Submit Event
     registerForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
         registerButton.disabled = true;
         registerButton.textContent = 'Registering...';
 
+        // Get form values
         const fullName = document.getElementById('s-name').value.trim();
         const rollNumber = document.getElementById('s-rollno').value.trim();
         const studentClass = document.getElementById('s-class').value.trim();
@@ -136,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmPassword = document.getElementById('s-confirm-password').value;
         const schoolName = document.getElementById('s-school').value.trim();
 
+        // Validate inputs
         if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !password || !schoolName) {
             alert("All fields are required!");
             registerButton.disabled = false;
@@ -150,18 +154,32 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Hash password
         const hashedPassword = await hashPassword(password);
+        console.log("Hashed Password:", hashedPassword); // Debugging log
+
+        // Prepare request body
+        const requestBody = JSON.stringify({
+            fullName, 
+            rollNumber, 
+            studentClass, 
+            division, 
+            phoneNumber, 
+            schoolName, 
+            password: hashedPassword
+        });
+
+        console.log("Final JSON Payload:", requestBody); // Debugging log
 
         try {
             const response = await fetch('https://classflow.sudeepbro.me/.netlify/functions/register-student', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password: hashedPassword
-                })
+                body: requestBody
             });
 
             const result = await response.json();
+            console.log("Server Response:", result); // Debugging log
 
             if (response.ok) {
                 modalMessage.textContent = 'Registration successful! Redirecting to login...';
@@ -179,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error("Error submitting form:", error);
-            modalMessage.textContent = 'Server Down Contact Developer or Try Again Later';
+            modalMessage.textContent = 'Server Down. Contact Developer or Try Again Later';
             successModal.style.display = 'block';
         } finally {
             registerButton.disabled = false;
@@ -187,6 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Close modal when clicked
     closeModal.addEventListener('click', () => {
         successModal.style.display = 'none';
     });
