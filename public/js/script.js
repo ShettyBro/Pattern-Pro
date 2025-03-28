@@ -154,9 +154,12 @@ if (registerForm) {
         try {
             const response = await fetch("https://classflow.sudeepbro.me/.netlify/functions/register-student", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"  // <- Add this to force JSON response
+                },
                 body: JSON.stringify({ fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password })
-            });
+            });            
 
             const responseData = await response.text(); // Read response as text for debugging
             console.log("Server Response:", responseData);
