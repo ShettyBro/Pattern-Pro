@@ -1,7 +1,10 @@
 const sql = require('mssql');
 const dbConfig = require('../dbConfig');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken')
 require('dotenv').config();
+
+const JWT_SECRET = process.env.JWT_SECRET || "your_fallback_secret";
 
 exports.handler = async (event) => {
     const headers = {
