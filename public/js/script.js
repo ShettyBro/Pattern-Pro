@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// Login function
+// student Login function
 document.addEventListener("DOMContentLoaded", function () {
     const loginForm = document.querySelector("form");
     
@@ -140,3 +140,74 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
   
+// teachers register
+document.addEventListener("DOMContentLoaded", function () {
+    const teacherRegisterForm = document.getElementById("teacher-register-form");
+    const modal = document.getElementById("messageModal");
+    const modalMessage = document.getElementById("modal-message");
+    const closeModal = document.querySelector(".close");
+
+    // Function to show modal with a message
+    function showModal(message) {
+        modalMessage.textContent = message;
+        modal.style.display = "block";
+    }
+
+    // Close modal when clicking '×' or outside modal
+    closeModal.onclick = () => (modal.style.display = "none");
+    window.onclick = (event) => {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    };
+
+    teacherRegisterForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const fullName = document.getElementById("t-name").value.trim();
+        const teacherId = document.getElementById("t-id").value.trim();
+        const email = document.getElementById("t-email").value.trim();
+        const phoneNumber = document.getElementById("t-phone").value.trim();
+        const schoolName = document.getElementById("t-school").value.trim();
+        const password = document.getElementById("t-password").value.trim();
+        const confirmPassword = document.getElementById("t-confirm-password").value.trim();
+
+        if (password !== confirmPassword) {
+            showModal("Passwords do not match!");
+            return;
+        }
+
+        const teacherData = {
+            fullName,
+            teacherId,
+            email,
+            phoneNumber,
+            schoolName,
+            password
+        };
+
+        try {
+            const response = await fetch("https://your-api-endpoint/register-teacher", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(teacherData)
+            });
+
+            const result = await response.json();
+
+            if (response.status === 201) {
+                showModal("Registration successful! Redirecting...");
+                setTimeout(() => {
+                    window.location.href = "./login-teacher.html"; // Redirect to login
+                }, 2000);
+            } else {
+                showModal(result.message || "Registration failed. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            showModal("An error occurred while registering.");
+        }
+    });
+});
