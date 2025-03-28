@@ -46,7 +46,7 @@ if (registerForm) {
         registerButton.textContent = 'Registering...'; 
 
     
-        const fullName = document.getElementById('fullName').value.trim();
+        const fullName = document.getElementById('fullName');
         const rollNumber = document.getElementById('rollNumber').value.trim();
         const studentClass = document.getElementById('studentClass').value.trim();
         const division = document.getElementById('division').value.trim();

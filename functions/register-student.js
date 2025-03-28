@@ -29,14 +29,14 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body);
     const { fullName, rollNumber, studentClass, division, phoneNumber, SchoolName, password } = body;
 
-    // Check for missing fields
-    if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !SchoolName || !password) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ message: 'All fields are required' })
-      };
-    }
+    // // Check for missing fields
+    // if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !SchoolName || !password) {
+    //   return {
+    //     statusCode: 400,
+    //     headers,
+    //     body: JSON.stringify({ message: 'All fields are required' })
+    //   };
+    // }
 
     const pool = await sql.connect(dbConfig);
 
