@@ -106,30 +106,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 //student register
-document.addEventListener('DOMContentLoaded', () => {
-    const registerForm = document.getElementById('student-register-form');
-    const successModal = document.getElementById('modal'); // Correct modal ID
-    const modalMessage = document.getElementById('modal-message');
-    const closeModal = document.querySelector('.close'); // Ensure close button exists
-    const registerButton = document.getElementById('registerButton'); // Ensure it's in HTML
 
-    // Function to hash the password
-    async function hashPassword(password) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-    }
-
-    // Form Submit Event
+const registerForm = document.getElementById('registerForm');
+if (registerForm) {
     registerForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        registerButton.disabled = true;
-        registerButton.textContent = 'Registering...';
-
-        // Get form values
+        event.preventDefault(); // Prevent form from submitting the traditional way
+       
+        // Get the button element and disable it
+        const registerButton = document.getElementById('registerButton');
+        registerButton.disabled = true; // Disable the button
+        registerButton.textContent = 'Registering...'; // Change button text for feedback
+       
         const fullName = document.getElementById('s-name').value.trim();
         const rollNumber = document.getElementById('s-rollno').value.trim();
         const studentClass = document.getElementById('s-class').value.trim();
@@ -139,128 +126,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmPassword = document.getElementById('s-confirm-password').value;
         const schoolName = document.getElementById('s-school').value.trim();
 
-        // Validate inputs
-        if (!fullName || !rollNumber || !studentClass || !division || !phoneNumber || !password || !schoolName) {
-            alert("All fields are required!");
-            registerButton.disabled = false;
-            registerButton.textContent = 'Register';
+          // Password validation rule: Minimum 8 characters and at least 1 special symbol
+          const passwordRegex = /^(?=.*[!@#$%^&*])(?=.{8,})/;
+
+        if (!passwordRegex.test(password)) {
+            passwordError.innerHTML = "<span style='color: red;'>Invalid Password <br>  * Mim 8 characters <br> * One special symbol (!@#$%^&*).</span>";
+            hasError = true;`1`
+            registerButton.disabled = false; // Re-enable the button if validation fails
+            registerButton.textContent = 'Register'; // Reset button text
             return;
+        }else {
+            passwordError.innerHTML = ""; // Clear password error if valid
         }
+        
 
-        if (password !== confirmPassword) {
-            alert("Passwords do not match!");
-            registerButton.disabled = false;
-            registerButton.textContent = 'Register';
-            return;
-        }
-
-        // Hash password
-        const hashedPassword = await hashPassword(password);
-        console.log("Hashed Password:", hashedPassword); // Debugging log
-
-        // Prepare request body
-        const requestBody = JSON.stringify({
-            fullName, 
-            rollNumber, 
-            studentClass, 
-            division, 
-            phoneNumber, 
-            schoolName, 
-            password: hashedPassword
+    try {
+        const response = await fetch('https://classflow.sudeepbro.me/.netlify/functions/register-student', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fullName, rollNumber, studentClass, division,phoneNumber,schoolName,confirmPassword })
         });
 
-        console.log("Final JSON Payload:", requestBody); // Debugging log
-
-        try {
-            const response = await fetch('https://classflow.sudeepbro.me/.netlify/functions/register-student', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: requestBody
-            });
-
-            const result = await response.json();
-            console.log("Server Response:", result); // Debugging log
-
-            if (response.ok) {
-                modalMessage.textContent = 'Registration successful! Redirecting to login...';
-                successModal.style.display = 'block';
-
-                setTimeout(() => {
-                    successModal.style.display = 'none';
-                    window.location.href = 'login-student.html';
-                }, 3000);
-
-                registerForm.reset();
-            } else {
-                modalMessage.textContent = `Registration failed: ${result.message}`;
-                successModal.style.display = 'block';
-            }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            modalMessage.textContent = 'Server Down. Contact Developer or Try Again Later';
-            successModal.style.display = 'block';
-        } finally {
-            registerButton.disabled = false;
-            registerButton.textContent = 'Register';
+        if (response.ok) {
+            showModal('Registration successful! Redirecting to login...', 'login.html');
+        } else {
+            const error = await response.text();
+            showModal(`Registration failed:
+                Username, fullname, or email already exists`);
         }
-    });
-
-    // Close modal when clicked
-    closeModal.addEventListener('click', () => {
-        successModal.style.display = 'none';
-    });
+    } catch (error) {
+        console.error('Registration Error:', error);
+        showModal('Server Down Contact Develpoer or Try Again Later');
+    }finally {
+        // Re-enable the button after the request is complete
+        registerButton.disabled = false; // Re-enable the button
+        registerButton.textContent = 'Register'; // Reset button text
+    }
 });
-
-// student login
-document.addEventListener("DOMContentLoaded", function () {
-    const loginForm = document.querySelector("form");
-    const successModal = document.getElementById("success-modal");
-    const modalMessage = document.getElementById("modal-message");
-    const closeModal = document.getElementById("close-modal");
-    
-    loginForm.addEventListener("submit", async function (event) {
-        event.preventDefault(); // Prevent page reload
-
-        const rollno = document.getElementById("s-login-id").value.trim();
-        const password = document.getElementById("s-password").value.trim();
-
-        if (!rollno || !password) {
-            alert("Please enter both Roll Number and Password.");
-            return;
-        }
-
-        try {
-            const response = await fetch("https://classflow.sudeepbro.me/.netlify/functions/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ rollno, password }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                modalMessage.textContent = "Login successful!";
-                successModal.style.display = "block";
-                localStorage.setItem("token", data.token); // Store token in localStorage
-                setTimeout(() => {
-                    successModal.style.display = "none";
-                    window.location.href = "dashboard.html"; // Redirect to dashboard
-                }, 3000);
-            } else {
-                alert(data.message || "Invalid credentials, please try again.");
-            }
-        } catch (error) {
-            console.error("Login error:", error);
-            alert("Something went wrong. Please try again later.");
-        }
-    });
-
-    closeModal.addEventListener("click", () => {
-        successModal.style.display = "none";
-    });
-});
+}
 
   
 // teachers register
