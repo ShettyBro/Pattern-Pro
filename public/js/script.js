@@ -106,79 +106,82 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 //student register
-const registerForm = document.getElementById("student-register-form"); 
-if (registerForm) {
-    registerForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("student-register-form");
+    const modal = document.getElementById("modal");
+    const modalMessage = document.getElementById("modal-message");
+    const closeModal = document.getElementById("close-modal");
 
-        // Get button and disable it while submitting
-        const registerButton = document.getElementById("registerButton");
-        registerButton.disabled = true;
-        registerButton.textContent = "Registering...";
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault(); // Prevent default form submission
 
         // Get form values
-        const fullName = document.getElementById("s-name").value.trim();
-        const rollNumber = document.getElementById("s-rollno").value.trim();
-        const studentClass = document.getElementById("s-class").value.trim();
-        const division = document.getElementById("s-division").value.trim();
-        const phoneNumber = document.getElementById("s-phone").value.trim();
+        const fullName = document.getElementById("s-name").value;
+        const rollNumber = document.getElementById("s-rollno").value;
+        const studentClass = document.getElementById("s-class").value;
+        const division = document.getElementById("s-division").value;
+        const phoneNumber = document.getElementById("s-phone").value;
+        const schoolName = document.getElementById("s-school").value;
         const password = document.getElementById("s-password").value;
         const confirmPassword = document.getElementById("s-confirm-password").value;
-        const schoolName = document.getElementById("s-school").value.trim();
-        const passwordError = document.getElementById("passwordError"); // Ensure password error field exists
 
-        // Password validation: Minimum 8 characters & at least 1 special character
-        const passwordRegex = /^(?=.*[!@#$%^&*])(?=.{8,})/;
-
-        if (!passwordRegex.test(password)) {
-            passwordError.innerHTML = "<span style='color: red;'>Invalid Password <br>  * Mim 8 characters <br> * One special symbol (!@#$%^&*).</span>";
-            hasError = true;`1`
-            registerButton.disabled = false; // Re-enable the button if validation fails
-            registerButton.textContent = 'Register'; // Reset button text
-            return;
-        } else {
-            if (passwordError) passwordError.innerHTML = ""; // Clear error if valid
-        }
-
-        // Ensure passwords match
+        // Basic validation
         if (password !== confirmPassword) {
-            alert("Passwords do not match!");
-            registerButton.disabled = false;
-            registerButton.textContent = "Register";
+            showModal("Passwords do not match.");
             return;
         }
 
-        // Log request payload before sending
-        console.log("Sending Request:", { fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password });
+        const requestData = {
+            fullName,
+            rollNumber,
+            studentClass,
+            division,
+            phoneNumber,
+            schoolName,
+            password
+        };
 
         try {
             const response = await fetch("https://classflow.sudeepbro.me/.netlify/functions/register-student", {
                 method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"  // <- Add this to force JSON response
+                headers: {
+                    "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ fullName, rollNumber, studentClass, division, phoneNumber, schoolName, password })
-            });            
+                body: JSON.stringify(requestData)
+            });
 
-            const responseData = await response.text(); // Read response as text for debugging
-            console.log("Server Response:", responseData);
+            const data = await response.json();
 
             if (response.ok) {
-                showModal("Registration successful! Redirecting to login...", "login-student.html");
+                showModal("Registration successful!");
+                form.reset(); // Clear form after success
             } else {
-                showModal(`Registration failed: ${responseData}`);
+                showModal(data.message || "Registration failed.");
             }
         } catch (error) {
-            console.error("Registration Error:", error);
-            showModal("Server Down Contact Developer or Try Again Later");
-        } finally {
-            registerButton.disabled = false;
-            registerButton.textContent = "Register";
+            console.error("Error:", error);
+            showModal("Server error. Please try again later.");
         }
     });
-}
 
+    // Function to display modal
+    function showModal(message) {
+        modalMessage.textContent = message;
+        modal.style.display = "block";
+    }
+
+    // Close modal on clicking 'X'
+    closeModal.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+});
 
 // Function to show a modal message
 function showModal(message, redirectUrl = null) {
