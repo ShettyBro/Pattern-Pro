@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <title>Teacher Login - Digital Classroom</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    p {
+      color: white;
+    }
+  </style>
 </head>
 <body>
   <div class="form-container">
@@ -14,17 +19,20 @@
         <input type="text" id="teacher-id" required>
       </div>
       <div class="form-group">
-        <label for="teacher-password">Password</label>
-        <input type="password" id="teacher-password" required>
+        <label for="t-password">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="t-password" required>
+          <span class="toggle-password">👁️</span>
+        </div>
       </div>
-      <button type="submit" class="btn">Login</button>
+      <button type="submit" class="btn" onclick="window.location.href='./teacher-dashboard.html'">Login</button>
       <div class="form-footer">
         <p>Don't have an account? <a href="register-teacher.html">Register here</a></p>
         <p><a href="./teacher-dashboard.html">Dashboard</a></p>
       </div>
     </form>
   </div>
-   <<!-- Modal for notifications -->
+   <!-- Modal for notifications -->
    <div id="modal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
@@ -32,5 +40,15 @@
     </div>
     
 </div>
+<script>
+    document.querySelectorAll('.toggle-password').forEach(toggle => {
+        toggle.addEventListener('click', function() {
+          const input = this.previousElementSibling;
+          const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+          input.setAttribute('type', type);
+          this.textContent = type === 'password' ? '👁️' : '🔒';
+        });
+      });
+    </script>
 </body>
 </html>

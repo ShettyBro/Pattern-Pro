@@ -101,8 +101,9 @@ document.addEventListener('DOMContentLoaded', function() {
         meta.setAttribute('content', 'no-cache, no-store, must-revalidate');
         document.head.appendChild(meta);
     }
-});
 
+});
+// Handle form submission for assignment submission
 
 
 //student register

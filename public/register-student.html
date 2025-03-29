@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <title>Student Registration</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    p {
+      color: white;
+    }
+  </style>
 </head>
 <body>
   <div class="form-container">
@@ -33,22 +38,30 @@
         <label for="s-school">School Name</label>
         <input type="text" id="s-school" required>
       </div>
+
       <div class="form-group">
         <label for="s-password">Password</label>
-        <input type="password" id="s-password" required>
+        <div class="password-wrapper">
+          <input type="password" id="s-password" required>
+          <span class="toggle-password">👁️</span>
+        </div>
       </div>
+      
       <div class="form-group">
         <label for="s-confirm-password">Confirm Password</label>
-        <input type="password" id="s-confirm-password" required>
+        <div class="password-wrapper">
+          <input type="password" id="s-confirm-password" required>
+          <span class="toggle-password">👁️</span>
+        </div>
       </div>
-      <button type="submit" class="btn" id="registerButton">Register</button>
+      <button type="submit" class="btn" id="registerButton" onclick="window.location.href='./login-student.html'" >Register</button>
 
     </form>
     <p>Already have an account? <a href="./login-student.html">Login</a></p>
 
     
   </div>
-   <<!-- Modal for notifications -->
+   <!-- Modal for notifications -->
    <div id="modal" class="modal">
     <div class="modal-content">
       <span id="close-modal" class="close">&times;</span>
@@ -56,5 +69,15 @@
         <p id="modal-message" class="modal-message"></p>
     </div>
 </div>
+<script>
+document.querySelectorAll('.toggle-password').forEach(toggle => {
+    toggle.addEventListener('click', function() {
+      const input = this.previousElementSibling;
+      const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+      input.setAttribute('type', type);
+      this.textContent = type === 'password' ? '👁️' : '🔒';
+    });
+  });
+</script>
 </body>
 </html>

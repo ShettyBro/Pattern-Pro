@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Assignment Submission | Digital Classroom</title>
-  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="./css/style.css">
+  
   <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Retrieve the token and its expiration time from local storage
@@ -29,7 +30,7 @@
     .assignment-container {
       max-width: 800px;
       margin: 2rem auto;
-      padding: 2rem;
+      padding: 3rem;
       background: white;
       border-radius: 8px;
       box-shadow: 0 2px 20px rgba(0,0,0,0.1);
@@ -132,6 +133,7 @@
       padding: 1rem;
       border-radius: 6px;
       margin-bottom: 1.5rem;
+      padding-right: 3rem;
     }
 
     /* Submit Button */
@@ -171,7 +173,7 @@
 <body>
   <div class="assignment-container">
     <div class="assignment-header">
-      <h2 class="assignment-title">Assignment Submission</h2>
+      <h2 class="classflow-title">Assignment Submission</h2>
       <div class="assignment-meta" id="assignment-meta">
         <!-- Filled by JavaScript -->
       </div>
@@ -231,7 +233,7 @@
         <div class="file-info" id="fileInfo"></div>
       </div>
 
-      <button type="submit" class="submit-btn">
+      <button type="submit" class="submit-btn" onclick="window.location.href='./dashboard.html'">
         <span id="submitText">Submit Assignment</span>
         <span id="submitLoading" style="display: none;">Uploading...</span>
       </button>
@@ -299,6 +301,16 @@
       const event = new Event('change');
       fileInput.dispatchEvent(event);
     });
+    
+    document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("assignmentForm");
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        alert("Assignment submitted successfully!", "dashboard.html");
+        // Clear form
+        form.reset();
+    });
+});
 
     // Form submission
     document.getElementById('assignmentForm').addEventListener('submit', function(e) {
